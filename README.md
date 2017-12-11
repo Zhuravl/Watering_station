@@ -20,8 +20,8 @@ Watering station project based on Arduino microcontroller.
 ## Circiut diagram
 ![Circiut diagram](/Docs/Circuit_diagram.PNG)
 
-## Pinout
-![Pinout](/Docs/Pinout.PNG)
+## Pinout diagram
+![Pinout diagram](/Docs/Pinout.PNG)
 
 ## User guide
 Some text with instructions...
