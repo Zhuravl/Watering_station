@@ -14,7 +14,8 @@ Watering station project based on Arduino microcontroller.
 
 ## Soft:
 - [Arduino IDE](https://www.arduino.cc/en/Main/Software);
-- [Driver for USB on chipset CH340](http://www.arduined.eu/ch340-windows-8-driver-download/).
+- [Driver for USB on chipset CH340](http://www.arduined.eu/ch340-windows-8-driver-download/);
+- [Library 'iarduino_RTC' (for RTC DS1302, DS1307, DS3231)](http://iarduino.ru/lib/ef47f92e639da4d4e009cc6f16dedd12.zip).
 
 ## Circiut diagram
 ![Circiut diagram](/Docs/Circuit_diagram.PNG)
