@@ -1,5 +1,6 @@
 # Watering station
 Watering station project based on Arduino microcontroller.
+System is turn on payload at configured watering time (twice, before and after the noon) and with configured duration. Also it's possible to configure all values by keypad and to see current system status on display.
 
 ## Components:
 1. [Arduino UNO R3 (CH340/ ATmega328P)](http://www.kosmodrom.com.ua/el.php?name=ARDUINO-UNO-R3-MEGA328P);
