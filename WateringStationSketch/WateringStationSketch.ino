@@ -50,6 +50,10 @@ void setup() {
   time.begin();
   lcd.begin(16, 2);
   //time.settime(30,7,14,8,12,17,5);  //Uncomment for setup, then comment again. Sec, min, hour, day, month, year, number of week day (0-San, 1-Mon..)
+  pinMode(D_PIN_RELLAY_PWR, OUTPUT);
+  pinMode(D_PIN_RELLAY_IN, OUTPUT);
+  pinMode(D_PIN_SNSR_PWR, OUTPUT);
+  digitalWrite(D_PIN_RELLAY_PWR, HIGH);
 }
 
 void loop() {
