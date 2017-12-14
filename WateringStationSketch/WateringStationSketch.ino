@@ -23,16 +23,16 @@ const int A_PIN_LCD_BTNS  = 0;
 const int A_PIN_SNSR_DATA = 5;
 
 const int LOOP_DELAY_TIME = 100;
-const int MIN_HOURS_1 = 0;
+const int MINUTES_IN_HOUR = 60;
+const int MIN_HOURS_1 = 2;
 const int MAX_HOURS_1 = 10;
-const int MIN_HOURS_2 = 14;
-const int MAX_HOURS_2 = 23;
+const int MIN_HOURS_2 = 16;
+const int MAX_HOURS_2 = 20;
 const int MIN_DURATION_MINUTES = 0;
-const int MAX_DURATION_MINUTES = 60 * 3;
+const int MAX_DURATION_MINUTES = 3 * MINUTES_IN_HOUR;
 const int MIN_MINUTES = 0;
 const int MAX_MINUTES = 59;
 const int RAIN_THRESHOLD = 1024; //0 - no rain, 1024 - max rain.
-const int MINUTES_IN_HOUR = 60;
 
 iarduino_RTC time(RTC_DS1302, D_PIN_RTC_RST, D_PIN_RTC_CLK, D_PIN_RTC_DAT);
 LiquidCrystal lcd(D_PIN_LCD_D8, D_PIN_LCD_D9, D_PIN_LCD_D4, D_PIN_LCD_D5, D_PIN_LCD_D6, D_PIN_LCD_D7);
@@ -53,7 +53,7 @@ void setup() {
   pinMode(D_PIN_RELAY_PWR, OUTPUT);
   pinMode(D_PIN_RELAY_IN, OUTPUT);
   pinMode(D_PIN_SNSR_PWR, OUTPUT);
-  
+
   digitalWrite(D_PIN_RELAY_PWR, HIGH);
   digitalWrite(D_PIN_RELAY_IN, LOW);
 }
@@ -64,6 +64,7 @@ void loop() {
     watering();
   }
   keysEvents();
+  checkRain();
 
   //Delay time to adjust the sensitivity of the buttons
   delay (LOOP_DELAY_TIME);
@@ -83,14 +84,6 @@ void watering() {
     int fromMidnight = (time.Hours * MINUTES_IN_HOUR) + time.minutes;
     int startWatering1 = (timeValuesArray[1] * MINUTES_IN_HOUR) + timeValuesArray[2];
     int startWatering2 = (timeValuesArray[4] * MINUTES_IN_HOUR) + timeValuesArray[5];
-
-    if ((fromMidnight == (startWatering1 - MINUTES_IN_HOUR)) || (fromMidnight == (startWatering1 - 2 * MINUTES_IN_HOUR)) || (fromMidnight == (startWatering2 - MINUTES_IN_HOUR)) || (fromMidnight == (startWatering2 - 2 * MINUTES_IN_HOUR))) {
-      //Time to check rain
-      //If skip flag is not true but it is rain - set to skip watering
-      if (!skipWatering && isItRain()) {
-        skipWatering = true;
-      }
-    }
 
     if ((fromMidnight >= startWatering1) && (fromMidnight <= (startWatering1 + timeValuesArray[3])) || (fromMidnight >= startWatering2) && (fromMidnight <= (startWatering2 + timeValuesArray[6]))) {
       //Time to watering
@@ -112,6 +105,28 @@ void watering() {
         //to the next watering left..
         printIt("", "W" + getPrettyTime(calculateWateringMinutes(getNextWatering())) + " -> -" + getPrettyTime(getDifferenceInMinutes(calculateWateringMinutes(getNextWatering()), ((time.Hours * MINUTES_IN_HOUR) + time.minutes))));
       }
+    }
+  }
+}
+
+//Checks rain before one and two hours to the next watering
+void checkRain() {
+  int fromMidnight = (time.Hours * MINUTES_IN_HOUR) + time.minutes;
+  int startWatering1 = (timeValuesArray[1] * MINUTES_IN_HOUR) + timeValuesArray[2];
+  int startWatering2 = (timeValuesArray[4] * MINUTES_IN_HOUR) + timeValuesArray[5];
+
+  //First check two hours before watering
+  if ((fromMidnight == (startWatering1 - (2 * MINUTES_IN_HOUR))) || (fromMidnight == (startWatering2 - (2 * MINUTES_IN_HOUR)))) {
+    //Time to check rain
+    //If skip flag is not true but it is rain - set to skip watering
+    skipWatering = isItRain();
+  }
+
+  //Second check one hours before watering
+  if ((fromMidnight == (startWatering1 - MINUTES_IN_HOUR)) || (fromMidnight == (startWatering2 - MINUTES_IN_HOUR))) {
+    //If it is rain but we have not detected it before
+    if (!skipWatering && isItRain()) {
+      skipWatering = true;
     }
   }
 }
@@ -150,6 +165,7 @@ int getNextWatering() {
 int calculateWateringMinutes(int number) {
   int indexH = (1 + (3 * number));
   int indexM = (2 + (3 * number));
+
   return ((timeValuesArray[indexH] * MINUTES_IN_HOUR) + timeValuesArray[indexM]);
 }
 
@@ -264,7 +280,7 @@ void keysEvents() {
         mode = 0;
       }
       if (mode == 1) {
-        printIt("    SETTINGS:   ", "press  <- or ->");
+        printIt("    SETTINGS:   ", "PRESS  <- OR ->");
         arrNumber = 0;
       }
     }
