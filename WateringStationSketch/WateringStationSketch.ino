@@ -1,4 +1,4 @@
-//Scetch for watering station
+//Sketch for watering station
 //Version 1.0
 //Author Zhuravskiy Ilya
 //Mail: ilya.zhuravskiy@gmail.com
@@ -6,16 +6,21 @@
 #include <LiquidCrystal.h>
 #include <iarduino_RTC.h>
 
-const int D_PIN_RTC_CLK = 4;
-const int D_PIN_RTC_DAT = 3;
-const int D_PIN_RTC_RST = 2;
-const int D_PIN_LCD_D4 = 5;
-const int D_PIN_LCD_D5 = 6;
-const int D_PIN_LCD_D6 = 7;
-const int D_PIN_LCD_D7 = 8;
-const int D_PIN_LCD_D8 = 9;
-const int D_PIN_LCD_D9 = 10;
-const int A_PIN_LCD_BTNS = 0;
+const int D_PIN_RTC_RST    = 2;
+const int D_PIN_RTC_DAT    = 3;
+const int D_PIN_RTC_CLK    = 4;
+const int D_PIN_LCD_D4     = 5;
+const int D_PIN_LCD_D5     = 6;
+const int D_PIN_LCD_D6     = 7;
+const int D_PIN_LCD_D7     = 8;
+const int D_PIN_LCD_D8     = 9;
+const int D_PIN_LCD_D9     = 10;
+const int D_PIN_RELLAY_PWR = 11;
+const int D_PIN_RELLAY_IN  = 12;
+const int D_PIN_SNSR_PWR   = 13;
+
+const int A_PIN_LCD_BTNS  = 0;
+const int A_PIN_SNSR_DATA = 5;
 
 const int LOOP_DELAY_TIME = 100;
 const int MIN_HOURS_1 = 0;
@@ -26,17 +31,21 @@ const int MIN_DURATION_MINUTES = 0;
 const int MAX_DURATION_MINUTES = 60 * 3;
 const int MIN_MINUTES = 0;
 const int MAX_MINUTES = 59;
+const int RAIN_THRESHOLD = 100; //0 - no rain, 1024 - max rain.
+const int MINUTES_IN_HOUR = 60;
 
 iarduino_RTC time(RTC_DS1302, D_PIN_RTC_RST, D_PIN_RTC_CLK, D_PIN_RTC_DAT);
 LiquidCrystal lcd(D_PIN_LCD_D8, D_PIN_LCD_D9, D_PIN_LCD_D4, D_PIN_LCD_D5, D_PIN_LCD_D6, D_PIN_LCD_D7);
 
 int mode; //0 - waiting mode, 1 - configuration mode.
 int timeValuesArray[7] = {6, 6, 0, 30, 18, 0, 30}; //Array with preferences {0:ElemSize, 1:WaterHour1, 2:WaterMinute1, 3:Duration1, 4:WaterHour2, 5:WaterMinute2, 6:Duration2}
-boolean forseWatering = false;
-boolean skipWatering = false;
+boolean forseWatering;
+boolean skipWatering;
 
 void setup() {
   mode = 0;
+  forseWatering = false;
+  skipWatering = false;
   Serial.begin(9600);
   time.begin();
   lcd.begin(16, 2);
@@ -44,8 +53,10 @@ void setup() {
 }
 
 void loop() {
-  showCurrentDateTime();
-  watering();
+  if (mode == 0) {
+    showCurrentDateTime();
+    watering();
+  }
   keysEvents();
 
   //Delay time to adjust the sensitivity of the buttons
@@ -54,14 +65,114 @@ void loop() {
 
 //Shows current time on LCD
 void showCurrentDateTime() {
-  if (mode == 0) {
-    printIt(time.gettime("d.m.Y H:i"), "                ");
-  }
+  printIt(time.gettime("d.m.Y H:i"), "");
 }
 
 //Check time and do watering (the main logic block)
 void watering() {
+  if (forseWatering) {
+    digitalWrite(D_PIN_RELLAY_IN, HIGH);
+    printIt("", "*FORSE WATERING*");
+  } else {
+    int fromMidnight = (time.Hours * MINUTES_IN_HOUR) + time.minutes;
+    int startWatering1 = (timeValuesArray[1] * MINUTES_IN_HOUR) + timeValuesArray[2];
+    int startWatering2 = (timeValuesArray[4] * MINUTES_IN_HOUR) + timeValuesArray[5];
 
+    if ((fromMidnight == (startWatering1 - MINUTES_IN_HOUR)) || (fromMidnight == (startWatering1 - 2 * MINUTES_IN_HOUR)) || (fromMidnight == (startWatering2 - MINUTES_IN_HOUR)) || (fromMidnight == (startWatering2 - 2 * MINUTES_IN_HOUR))) {
+      //Time to check rain
+      //If skip flag is not true but it is rain - set to skip watering
+      if (!skipWatering && isItRain()) {
+        skipWatering = true;
+      }
+    }
+
+    if ((fromMidnight >= startWatering1) && (fromMidnight <= (startWatering1 + timeValuesArray[3])) || (fromMidnight >= startWatering2) && (fromMidnight <= (startWatering2 + timeValuesArray[6]))) {
+      //Time to watering
+      if (skipWatering) {
+        //skip watering
+        digitalWrite(D_PIN_RELLAY_IN, LOW);
+        printIt("", "WATERING SKIPED!");
+      } else {
+        //let's watering!
+        digitalWrite(D_PIN_RELLAY_IN, HIGH);
+        printIt("", "WATERING: -" + getPrettyTime(getDifferenceInMinutes(calculateWateringMinutes(getNextWatering()) + timeValuesArray[(3 + 3 * getNextWatering())], ((time.Hours * MINUTES_IN_HOUR) + time.minutes))));
+      }
+    } else {
+      digitalWrite(D_PIN_RELLAY_IN, LOW);
+      if (skipWatering) {
+        //watering will skip!
+        printIt("", "W" + getPrettyTime(calculateWateringMinutes(getNextWatering())) + " 'LL SKIP!");
+      } else {
+        //to the next watering left..
+        printIt("", "W" + getPrettyTime(calculateWateringMinutes(getNextWatering())) + " -> -" + getPrettyTime(getDifferenceInMinutes(calculateWateringMinutes(getNextWatering()), ((time.Hours * MINUTES_IN_HOUR) + time.minutes))));
+      }
+    }
+  }
+}
+
+//Checks if the rain sensor shows rain
+boolean isItRain() {
+  digitalWrite(D_PIN_SNSR_PWR, HIGH);
+  boolean result = (analogRead(A_PIN_SNSR_DATA) > RAIN_THRESHOLD);
+  digitalWrite(D_PIN_SNSR_PWR, LOW);
+  return result;
+}
+
+//Calculates how many minutes are from 'now' till 'purpose'
+int getDifferenceInMinutes(int purpose, int now) {
+  if (purpose < now) {
+    return ((24 * MINUTES_IN_HOUR - now) + purpose);
+  } else {
+    return (purpose - now);
+  }
+}
+
+//Returns current or nearest watering time number (0 - first, 1 - second).
+int getNextWatering() {
+  int fromMidnight = (time.Hours * MINUTES_IN_HOUR) + time.minutes;
+  int endWatering1 = (timeValuesArray[1] * MINUTES_IN_HOUR) + timeValuesArray[2] + timeValuesArray[3];
+  int endWatering2 = (timeValuesArray[4] * MINUTES_IN_HOUR) + timeValuesArray[5] + timeValuesArray[6];
+
+  if ((fromMidnight > endWatering1) && (fromMidnight <= endWatering2)) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+//Calculates number of the minutes form the start of day
+int calculateWateringMinutes(int number) {
+  int indexH = (1 + (3 * number));
+  int indexM = (2 + (3 * number));
+  return ((timeValuesArray[indexH] * MINUTES_IN_HOUR) + timeValuesArray[indexM]);
+}
+
+//Converts value with time in minutes to string with colon
+String getPrettyTime(int curTime) {
+  int h = abs(curTime) / MINUTES_IN_HOUR;
+  int m = abs(curTime) - (h * MINUTES_IN_HOUR);
+
+  return getPrettyTime(h, m);
+}
+
+//Converts values with hours and minutes to string with colon
+String getPrettyTime(int curHours, int curMinutes) {
+  String h;
+  String m;
+
+  if (curHours <= 9) {
+    h = "0" + String(curHours);
+  } else {
+    h = String(curHours);
+  }
+
+  if (curMinutes <= 9) {
+    m = "0" + String(curMinutes);
+  } else {
+    m = String(curMinutes);
+  }
+
+  return (h + ":" + m);
 }
 
 //Check and react if buttons have been pressed
