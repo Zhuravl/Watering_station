@@ -85,7 +85,7 @@ void watering() {
     int startWatering1 = (timeValuesArray[1] * MINUTES_IN_HOUR) + timeValuesArray[2];
     int startWatering2 = (timeValuesArray[4] * MINUTES_IN_HOUR) + timeValuesArray[5];
 
-    if ((fromMidnight >= startWatering1) && (fromMidnight <= (startWatering1 + timeValuesArray[3])) || (fromMidnight >= startWatering2) && (fromMidnight <= (startWatering2 + timeValuesArray[6]))) {
+    if ( ((fromMidnight >= startWatering1) && (fromMidnight < (startWatering1 + timeValuesArray[3]))) || ((fromMidnight >= startWatering2) && (fromMidnight < (startWatering2 + timeValuesArray[6]))) ) {
       //Time to watering
       if (skipWatering) {
         //skip watering
