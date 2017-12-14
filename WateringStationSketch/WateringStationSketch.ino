@@ -31,7 +31,7 @@ const int MIN_DURATION_MINUTES = 0;
 const int MAX_DURATION_MINUTES = 60 * 3;
 const int MIN_MINUTES = 0;
 const int MAX_MINUTES = 59;
-const int RAIN_THRESHOLD = 100; //0 - no rain, 1024 - max rain.
+const int RAIN_THRESHOLD = 1024; //0 - no rain, 1024 - max rain.
 const int MINUTES_IN_HOUR = 60;
 
 iarduino_RTC time(RTC_DS1302, D_PIN_RTC_RST, D_PIN_RTC_CLK, D_PIN_RTC_DAT);
