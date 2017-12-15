@@ -25,4 +25,57 @@ System is turn on payload at configured watering time (twice, before and after t
 ![Pinout diagram](/Docs/Pinout.PNG)
 
 ## User guide
-Some text with instructions...
+1. **Get started**
+
+For device set up, plug the outdoor sensor and high voltage cable according to the 'Pinout diagram'. Then plug power supply. After the boot you will see the current date on a top line. The device is ready to use.
+
+The default settings are:
+
+- First watering time is 06:00 with 30 minutes duration;
+- Second watering time is 18:00 with 30 minutes duration.
+
+Each parameters can be configured by settings.
+
+2. **Screen indication**
+
+   "15.12.2017 11:09" - Normal mode. Current date and time indication;
+   
+   "W18:00 -> -03:28" - Normal mode. Next watering will be at 18:00 in 3 hours and 28 minutes;
+   
+   "W18:00 'LL SKIP!" - Normal mode. Watering at 18:00 will be skip;
+   
+   "WATERING: -00:11" - Normal mode. It is watering right now. And will continue for 11 more minutes;
+   
+   "*FORSE WATERING*" - Normal mode. It is forse watering active;
+   
+   "< W.DURATION 1 >" - Configuration mode. Changing the duration of the first watering.
+   
+
+3. **Keys and parts**
+
+- **Mode key:** Changes device mode (normal or configuration)
+- **Left key:** 
+
+  Normal mode: Skip next watering (one time). For regular cancellation set duration to zero
+  
+  Configuration mode: Navigates between parameters (Watering Hours 1, Watering Minutes 1, Duration 1, Watering Hours 2, Watering Minutes 2, Duration 2)
+  
+- **Right key:** 
+  
+  Normal mode: Turn on/off forse watering
+  
+  Configuration mode: Navigates between parameters like the "Left key"
+  
+- **Up key:** 
+
+  Normal mode: Nothing
+  
+  Configuration mode: Increase current parameter
+
+- **Down key:**
+  
+  Normal mode: Nothing
+  
+  Configuration mode: Decrease current parameter
+  
+- **Reset key:** Reboots device and sets settings to default.
