@@ -42,9 +42,9 @@ Each parameters can be configured by settings.
    
    "W18:00 -> -03:28" - Normal mode. Next watering will be at 18:00 in 3 hours and 28 minutes;
    
-   "W18:00 'LL SKIP!" - Normal mode. Watering at 18:00 will be skip;
+   "W18:00 'LL SKIP!" - Normal mode. Watering at 18:00 will skip;
    
-   "WATERING: -00:11" - Normal mode. It is watering right now. And will continue for 11 more minutes;
+   "WATERING: -00:11" - Normal mode. It is watering right now. And will continue for 11 minutes;
    
    "*FORSE WATERING*" - Normal mode. It is forse watering active;
    
