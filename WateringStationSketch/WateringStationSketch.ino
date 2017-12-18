@@ -59,12 +59,19 @@ void setup() {
 }
 
 void loop() {
+  int fromMidnight = (time.Hours * MINUTES_IN_HOUR) + time.minutes;
+  int startWatering1 = (timeValuesArray[1] * MINUTES_IN_HOUR) + timeValuesArray[2];
+  int endWatering1 = startWatering1 + timeValuesArray[3];
+  int startWatering2 = (timeValuesArray[4] * MINUTES_IN_HOUR) + timeValuesArray[5];
+  int endWatering2 = startWatering2 + timeValuesArray[6];
+  
   if (mode == 0) {
     showCurrentDateTime();
-    watering();
+    watering(fromMidnight, startWatering1, startWatering2);
   }
   keysEvents();
-  checkRain();
+  checkRain(fromMidnight, startWatering1, startWatering2);
+  resetRainData(fromMidnight, endWatering1, endWatering2);
 
   //Delay time to adjust the sensitivity of the buttons
   delay (LOOP_DELAY_TIME);
@@ -76,15 +83,11 @@ void showCurrentDateTime() {
 }
 
 //Check time and do watering (the main logic block)
-void watering() {
+void watering(int fromMidnight, int startWatering1, int startWatering2) {
   if (forseWatering) {
     digitalWrite(D_PIN_RELAY_IN, HIGH);
     printIt("", "*FORSE WATERING*");
   } else {
-    int fromMidnight = (time.Hours * MINUTES_IN_HOUR) + time.minutes;
-    int startWatering1 = (timeValuesArray[1] * MINUTES_IN_HOUR) + timeValuesArray[2];
-    int startWatering2 = (timeValuesArray[4] * MINUTES_IN_HOUR) + timeValuesArray[5];
-
     if ( ((fromMidnight >= startWatering1) && (fromMidnight < (startWatering1 + timeValuesArray[3]))) || ((fromMidnight >= startWatering2) && (fromMidnight < (startWatering2 + timeValuesArray[6]))) ) {
       //Time to watering
       if (skipWatering) {
@@ -110,24 +113,19 @@ void watering() {
 }
 
 //Checks rain before one and two hours to the next watering
-void checkRain() {
-  int fromMidnight = (time.Hours * MINUTES_IN_HOUR) + time.minutes;
-  int startWatering1 = (timeValuesArray[1] * MINUTES_IN_HOUR) + timeValuesArray[2];
-  int startWatering2 = (timeValuesArray[4] * MINUTES_IN_HOUR) + timeValuesArray[5];
-
-  //First check two hours before watering
-  if ((fromMidnight == (startWatering1 - (2 * MINUTES_IN_HOUR))) || (fromMidnight == (startWatering2 - (2 * MINUTES_IN_HOUR)))) {
-    //Time to check rain
-    //If skip flag is not true but it is rain - set to skip watering
-    skipWatering = isItRain();
-  }
-
-  //Second check one hours before watering
-  if ((fromMidnight == (startWatering1 - MINUTES_IN_HOUR)) || (fromMidnight == (startWatering2 - MINUTES_IN_HOUR))) {
+void checkRain(int fromMidnight, int startWatering1, int startWatering2) {
+  if ((fromMidnight == (startWatering1 - (2 * MINUTES_IN_HOUR))) || (fromMidnight == (startWatering1 - MINUTES_IN_HOUR)) || (fromMidnight == (startWatering2 - (2 * MINUTES_IN_HOUR))) || (fromMidnight == (startWatering2 - MINUTES_IN_HOUR))) {
     //If it is rain but we have not detected it before
     if (!skipWatering && isItRain()) {
       skipWatering = true;
     }
+  }
+}
+
+//Resets rain data once after each watering
+void resetRainData(int fromMidnight, int endWatering1, int endWatering2) {
+  if ((fromMidnight == (endWatering1 + 1)) || (fromMidnight == (endWatering2 + 1))) {
+    skipWatering = false;
   }
 }
 
