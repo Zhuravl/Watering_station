@@ -41,11 +41,13 @@ int mode; //0 - waiting mode, 1 - configuration mode.
 int timeValuesArray[7] = {6, 6, 0, 30, 18, 0, 30}; //Array with preferences {0:ElemSize, 1:WaterHour1, 2:WaterMinute1, 3:Duration1, 4:WaterHour2, 5:WaterMinute2, 6:Duration2}
 boolean forseWatering;
 boolean skipWatering;
+boolean needToResetValues;
 
 void setup() {
   mode = 0;
   forseWatering = false;
   skipWatering = false;
+  needToResetValues = false;
   Serial.begin(9600);
   time.begin();
   lcd.begin(16, 2);
@@ -61,9 +63,7 @@ void setup() {
 void loop() {
   int fromMidnight = (time.Hours * MINUTES_IN_HOUR) + time.minutes;
   int startWatering1 = (timeValuesArray[1] * MINUTES_IN_HOUR) + timeValuesArray[2];
-  int endWatering1 = startWatering1 + timeValuesArray[3];
   int startWatering2 = (timeValuesArray[4] * MINUTES_IN_HOUR) + timeValuesArray[5];
-  int endWatering2 = startWatering2 + timeValuesArray[6];
   
   if (mode == 0) {
     showCurrentDateTime();
@@ -71,7 +71,6 @@ void loop() {
   }
   keysEvents();
   checkRain(fromMidnight, startWatering1, startWatering2);
-  resetRainData(fromMidnight, endWatering1, endWatering2);
 
   //Delay time to adjust the sensitivity of the buttons
   delay (LOOP_DELAY_TIME);
@@ -99,8 +98,18 @@ void watering(int fromMidnight, int startWatering1, int startWatering2) {
         digitalWrite(D_PIN_RELAY_IN, HIGH);
         printIt("", "WATERING: -" + getPrettyTime(getDifferenceInMinutes(calculateWateringMinutes(getNextWatering()) + timeValuesArray[(3 + 3 * getNextWatering())], ((time.Hours * MINUTES_IN_HOUR) + time.minutes))));
       }
+
+      //need to refresh values for the next watering
+      needToResetValues = true;
     } else {
       digitalWrite(D_PIN_RELAY_IN, LOW);
+
+      //Resets rain data once after each watering
+      if (needToResetValues) {
+        skipWatering = false;
+        needToResetValues = false;
+      }
+      
       if (skipWatering) {
         //watering will skip!
         printIt("", "W" + getPrettyTime(calculateWateringMinutes(getNextWatering())) + " 'LL SKIP!");
@@ -119,13 +128,6 @@ void checkRain(int fromMidnight, int startWatering1, int startWatering2) {
     if (!skipWatering && isItRain()) {
       skipWatering = true;
     }
-  }
-}
-
-//Resets rain data once after each watering
-void resetRainData(int fromMidnight, int endWatering1, int endWatering2) {
-  if ((fromMidnight == (endWatering1 + 1)) || (fromMidnight == (endWatering2 + 1))) {
-    skipWatering = false;
   }
 }
 
