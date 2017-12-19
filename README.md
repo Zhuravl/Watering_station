@@ -5,7 +5,7 @@ System is turn on payload at configured watering time (twice, before and after t
 ## Components:
 1. [Arduino UNO R3 (CH340/ ATmega328P)](http://www.kosmodrom.com.ua/el.php?name=ARDUINO-UNO-R3-MEGA328P);
 2. [Power supply for Arduino UNO (OV-A002 9V/1A)](https://www.rcscomponents.kiev.ua/product/ov-a002-9v-1a_67292.html);
-3. [5V Rellay for Arduino](http://www.kosmodrom.com.ua/el.php?name=1CH5VRMA);
+3. [5V Relay for Arduino](http://www.kosmodrom.com.ua/el.php?name=1CH5VRMA);
 4. [Real Time Clock](http://www.kosmodrom.com.ua/el.php?name=DS1302-MOD);
 5. [Rain sensor](http://www.kosmodrom.com.ua/el.php?name=T1592-MODUL);
 6. [LCD Keypad Shield](http://www.kosmodrom.com.ua/el.php?name=LCD1602KEYPAD);
@@ -18,16 +18,16 @@ System is turn on payload at configured watering time (twice, before and after t
 - [Driver for USB on chipset CH340](http://www.arduined.eu/ch340-windows-8-driver-download/);
 - [Library 'iarduino_RTC' (for RTC DS1302, DS1307, DS3231)](http://iarduino.ru/lib/ef47f92e639da4d4e009cc6f16dedd12.zip).
 
-## Circiut diagram
-![Circiut diagram](/Docs/Circuit_diagram.PNG)
+## Circuit diagram
+![Circuit diagram](/Docs/Circuit_diagram.PNG)
 
-## Pinout diagram
-![Pinout diagram](/Docs/Pinout.PNG)
+## Pinouts diagram
+![Pinouts diagram](/Docs/Pinouts.PNG)
 
 ## User guide
 1. **Get started**
 
-For device set up, plug the outdoor sensor and high voltage cable according to the 'Pinout diagram'. Then plug power supply. After the boot you will see the current date on a top line. The device is ready to use.
+For device set up, plug the outdoor sensor and high voltage cable according to the 'Pinouts diagram'. Then plug power supply. After the boot you will see the current date on a top line. The device is ready to use.
 
 The default settings are:
 
@@ -46,7 +46,7 @@ Each parameters can be configured by settings.
    
    "WATERING: -00:11" - Normal mode. It is watering right now. And will continue for 11 minutes;
    
-   "*FORSE WATERING*" - Normal mode. It is forse watering active;
+   "*FORSE WATERING*" - Normal mode. It is force watering active;
    
    "< W.DURATION 1 >" - Configuration mode. Changing the duration of the first watering.
    
@@ -62,7 +62,7 @@ Each parameters can be configured by settings.
   
 - **Right key:** 
   
-  Normal mode: Turn on/off forse watering
+  Normal mode: Turn on/off force watering
   
   Configuration mode: Navigates between parameters like the "Left key"
   
@@ -79,3 +79,10 @@ Each parameters can be configured by settings.
   Configuration mode: Decrease current parameter
   
 - **Reset key:** Reboots device and sets settings to default.
+
+
+## Prototype (front view)
+![Prototype. Front view](/Docs/PrototypeFront.jpg)
+
+## Prototype (back view)
+![Prototype. Back view](/Docs/PrototypeBack.jpg)
