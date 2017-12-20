@@ -15,7 +15,6 @@ const int D_PIN_LCD_D6     = 7;
 const int D_PIN_LCD_D7     = 8;
 const int D_PIN_LCD_D8     = 9;
 const int D_PIN_LCD_D9     = 10;
-const int D_PIN_RELAY_PWR = 11;
 const int D_PIN_RELAY_IN  = 12;
 const int D_PIN_SNSR_PWR   = 13;
 
@@ -52,11 +51,9 @@ void setup() {
   time.begin();
   lcd.begin(16, 2);
   //time.settime(30,7,14,8,12,17,5);  //Uncomment for setup, then comment again. Sec, min, hour, day, month, year, number of week day (0-San, 1-Mon..)
-  pinMode(D_PIN_RELAY_PWR, OUTPUT);
   pinMode(D_PIN_RELAY_IN, OUTPUT);
   pinMode(D_PIN_SNSR_PWR, OUTPUT);
 
-  digitalWrite(D_PIN_RELAY_PWR, HIGH);
   digitalWrite(D_PIN_RELAY_IN, HIGH); //HIGH - Turn off relay, LOW - turn on relay
 }
 
