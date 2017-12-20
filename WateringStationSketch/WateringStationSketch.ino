@@ -57,7 +57,7 @@ void setup() {
   pinMode(D_PIN_SNSR_PWR, OUTPUT);
 
   digitalWrite(D_PIN_RELAY_PWR, HIGH);
-  digitalWrite(D_PIN_RELAY_IN, LOW);
+  digitalWrite(D_PIN_RELAY_IN, HIGH); //HIGH - Turn off relay, LOW - turn on relay
 }
 
 void loop() {
@@ -84,25 +84,25 @@ void showCurrentDateTime() {
 //Check time and do watering (the main logic block)
 void watering(int fromMidnight, int startWatering1, int startWatering2) {
   if (forseWatering) {
-    digitalWrite(D_PIN_RELAY_IN, HIGH);
+    digitalWrite(D_PIN_RELAY_IN, LOW);
     printIt("", "*FORSE WATERING*");
   } else {
     if ( ((fromMidnight >= startWatering1) && (fromMidnight < (startWatering1 + timeValuesArray[3]))) || ((fromMidnight >= startWatering2) && (fromMidnight < (startWatering2 + timeValuesArray[6]))) ) {
       //Time to watering
       if (skipWatering) {
         //skip watering
-        digitalWrite(D_PIN_RELAY_IN, LOW);
+        digitalWrite(D_PIN_RELAY_IN, HIGH);
         printIt("", "WATERING SKIPED!");
       } else {
         //let's watering!
-        digitalWrite(D_PIN_RELAY_IN, HIGH);
+        digitalWrite(D_PIN_RELAY_IN, LOW);
         printIt("", "WATERING: -" + getPrettyTime(getDifferenceInMinutes(calculateWateringMinutes(getNextWatering()) + timeValuesArray[(3 + 3 * getNextWatering())], ((time.Hours * MINUTES_IN_HOUR) + time.minutes))));
       }
 
       //need to refresh values for the next watering
       needToResetValues = true;
     } else {
-      digitalWrite(D_PIN_RELAY_IN, LOW);
+      digitalWrite(D_PIN_RELAY_IN, HIGH);
 
       //Resets rain data once after each watering
       if (needToResetValues) {
