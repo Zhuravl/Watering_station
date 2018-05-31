@@ -5,7 +5,7 @@ System is turn on payload at configured watering time (twice, before and after t
 ## Components:
 1. [Arduino UNO R3 (CH340/ ATmega328P)](http://www.kosmodrom.com.ua/el.php?name=ARDUINO-UNO-R3-MEGA328P);
 2. [Power supply for Arduino UNO (OV-A002 9V/1A)](https://www.rcscomponents.kiev.ua/product/ov-a002-9v-1a_67292.html);
-3. [5V Relay for Arduino](http://www.kosmodrom.com.ua/el.php?name=1CH5VRMA);
+3. [5V Relay for Arduino](http://www.kosmodrom.com.ua/el.php?name=RelayModule1relay5V30A);
 4. [Real Time Clock](http://www.kosmodrom.com.ua/el.php?name=DS1302-MOD);
 5. [Rain sensor](http://www.kosmodrom.com.ua/el.php?name=T1592-MODUL);
 6. [LCD Keypad Shield](http://www.kosmodrom.com.ua/el.php?name=LCD1602KEYPAD);
