@@ -25,7 +25,7 @@ const int LOOP_DELAY_TIME = 100;
 const int MINUTES_IN_HOUR = 60;
 const int MIN_HOURS_1 = 2;
 const int MAX_HOURS_1 = 10;
-const int MIN_HOURS_2 = 16;
+const int MIN_HOURS_2 = 15;
 const int MAX_HOURS_2 = 20;
 const int MIN_DURATION_MINUTES = 0;
 const int MAX_DURATION_MINUTES = 3 * MINUTES_IN_HOUR;
@@ -54,7 +54,7 @@ void setup() {
   pinMode(D_PIN_RELAY_IN, OUTPUT);
   pinMode(D_PIN_SNSR_PWR, OUTPUT);
 
-  digitalWrite(D_PIN_RELAY_IN, LOW); //HIGH - Turn off relay, LOW - turn on relay
+  digitalWrite(D_PIN_RELAY_IN, LOW); //HIGH - Turn on relay, LOW - turn off relay
 }
 
 void loop() {
@@ -151,7 +151,7 @@ int getNextWatering() {
   int endWatering1 = (timeValuesArray[1] * MINUTES_IN_HOUR) + timeValuesArray[2] + timeValuesArray[3];
   int endWatering2 = (timeValuesArray[4] * MINUTES_IN_HOUR) + timeValuesArray[5] + timeValuesArray[6];
 
-  if ((fromMidnight > endWatering1) && (fromMidnight <= endWatering2)) {
+  if ((fromMidnight > endWatering1) && (fromMidnight < endWatering2)) {
     return 1;
   } else {
     return 0;
