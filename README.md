@@ -86,3 +86,12 @@ Each parameters can be configured by settings.
 
 ## Prototype (back view)
 ![Prototype. Back view](/Docs/PrototypeBack.jpg)
+
+## Device (inside view)
+![Device. Insude view](/Docs/DeviceInsude.jpg)
+
+## Device (front view)
+![Device. Front view](/Docs/DeviceFront.jpg)
+
+## Device (overview)
+![Device. Overview](/Docs/DeviceOverview.jpg)
